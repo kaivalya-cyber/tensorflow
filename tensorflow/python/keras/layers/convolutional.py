@@ -1796,6 +1796,9 @@ class SeparableConv(Conv):
         trainable=trainable,
         name=name,
         **kwargs)
+    if depth_multiplier <= 0:
+      raise ValueError(
+          f'depth_multiplier must be a positive integer, got {depth_multiplier}')
     self.depth_multiplier = depth_multiplier
     self.depthwise_initializer = initializers.get(depthwise_initializer)
     self.pointwise_initializer = initializers.get(pointwise_initializer)
