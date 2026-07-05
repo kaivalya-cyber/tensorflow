@@ -722,6 +722,8 @@ class RepeatVector(Layer):
     self.n = n
     if not isinstance(n, int):
       raise TypeError(f'Expected an integer value for `n`, got {type(n)}.')
+    if n <= 0:
+      raise ValueError(f'n must be a positive integer, got {n}')
     self.input_spec = InputSpec(ndim=2)
 
   def compute_output_shape(self, input_shape):
