@@ -59,6 +59,9 @@ class Pooling1D(Layer):
       strides = pool_size
     self.pool_function = pool_function
     self.pool_size = conv_utils.normalize_tuple(pool_size, 1, 'pool_size')
+    if any(s <= 0 for s in self.pool_size):
+      raise ValueError(
+          f'pool_size must be positive, got {self.pool_size}')
     self.strides = conv_utils.normalize_tuple(strides, 1, 'strides')
     self.padding = conv_utils.normalize_padding(padding)
     self.data_format = conv_utils.normalize_data_format(data_format)
