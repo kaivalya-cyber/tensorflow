@@ -1518,6 +1518,17 @@ def flip(m, axis=None):  # pylint: disable=missing-docstring
   if np_utils.isscalar(axis):
     axis = [axis]
 
+  maybe_rank = m.shape.rank
+  if maybe_rank is not None:
+    for ax in axis:
+      if isinstance(ax, (int, np.integer)):
+        normalized = ax + maybe_rank if ax < 0 else ax
+        if normalized < 0 or normalized >= maybe_rank:
+          raise ValueError(
+              f'Argument `axis` (received axis={ax}) is out of bounds '
+              f'for input {m} of rank {maybe_rank}.'
+          )
+
   axis = np_utils._canonicalize_axes(axis, array_ops.rank(m))  # pylint: disable=protected-access
 
   return array_ops.reverse(m, axis)
@@ -1541,6 +1552,17 @@ def roll(a, shift, axis=None):  # pylint: disable=missing-docstring
   a = asarray(a)
 
   if axis is not None:
+    maybe_rank = a.shape.rank
+    if maybe_rank is not None:
+      axes = axis if isinstance(axis, (tuple, list, np.ndarray)) else (axis,)
+      for ax in axes:
+        if isinstance(ax, (int, np.integer)):
+          normalized = ax + maybe_rank if ax < 0 else ax
+          if normalized < 0 or normalized >= maybe_rank:
+            raise ValueError(
+                f'Argument `axis` (received axis={ax}) is out of bounds '
+                f'for input {a} of rank {maybe_rank}.'
+            )
     return manip_ops.roll(a, shift, axis)
 
   # If axis is None, the roll happens as a 1-d tensor.
