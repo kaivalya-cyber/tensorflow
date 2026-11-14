@@ -911,15 +911,20 @@ def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=None):  # pylint: d
 
 @tf_export.tf_export('experimental.numpy.std', v1=[])
 @np_utils.np_doc('std')
-def std(a, axis=None, keepdims=None):  # pylint: disable=missing-function-docstring
-  return _reduce(
-      math_ops.reduce_std,
-      a,
-      axis=axis,
-      dtype=None,
-      keepdims=keepdims,
-      promote_int=_TO_FLOAT,
-  )
+def std(a, axis=None, keepdims=None, ddof=0):  # pylint: disable=missing-function-docstring
+  if ddof == 0:
+    return _reduce(
+        math_ops.reduce_std,
+        a,
+        axis=axis,
+        dtype=None,
+        keepdims=keepdims,
+        promote_int=_TO_FLOAT,
+    )
+  # `math_ops.reduce_std` has no `ddof`, so handle a non-zero `ddof` as NumPy
+  # does: `std` is the square root of `var`, whose implementation already
+  # supports arbitrary degrees of freedom.
+  return math_ops.sqrt(var(a, axis=axis, ddof=ddof, keepdims=keepdims))
 
 
 @tf_export.tf_export('experimental.numpy.ravel', v1=[])
